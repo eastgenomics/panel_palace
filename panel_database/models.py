@@ -15,16 +15,16 @@ class Test(models.Model):
 
 
 class TestPanel(models.Model):
-    test_id = models.ForeignKey(Test, on_delete=models.DO_NOTHING, db_column="test_id")
-    panel_id = models.ForeignKey("Panel", on_delete=models.DO_NOTHING, db_column="panel_id")
+    test = models.ForeignKey(Test, on_delete=models.DO_NOTHING)
+    panel = models.ForeignKey("Panel", on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = "test_panel"
 
 
 class TestGene(models.Model):
-    test_id = models.ForeignKey(Test, on_delete=models.DO_NOTHING, db_column="test_id")
-    gene_id = models.ForeignKey("Gene", on_delete=models.DO_NOTHING, db_column="gene_id")
+    test = models.ForeignKey(Test, on_delete=models.DO_NOTHING)
+    gene = models.ForeignKey("Gene", on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = "test_gene"
@@ -35,21 +35,34 @@ class Panel(models.Model):
     name = models.CharField(max_length=100)
     version = models.CharField(max_length=100)
     signedoff = models.CharField(max_length=100)
+    is_superpanel = models.BooleanField()
 
     class Meta:
         db_table = "panel"
 
 
+class Superpanel(models.Model):
+    superpanel = models.ForeignKey(
+        "Panel", on_delete=models.DO_NOTHING, related_name="superpanel"
+    )
+    panel = models.ForeignKey(
+        "Panel", on_delete=models.DO_NOTHING, related_name="panel"
+    )
+
+    class Meta:
+        db_table = "superpanel"
+
+
 class PanelStr(models.Model):
-    panel_id = models.ForeignKey(Panel, on_delete=models.DO_NOTHING, db_column="panel_id")
-    str_id = models.ForeignKey("Str", on_delete=models.DO_NOTHING, db_column="str_id")
+    panel = models.ForeignKey(Panel, on_delete=models.DO_NOTHING)
+    str = models.ForeignKey("Str", on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = "panel_str"
 
 
 class Str(models.Model):
-    gene_id = models.ForeignKey("Gene", on_delete=models.DO_NOTHING, db_column="gene_id")
+    gene = models.ForeignKey("Gene", on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=100)
     repeated_sequence = models.CharField(max_length=100)
     nb_repeats = models.IntegerField()
@@ -60,16 +73,16 @@ class Str(models.Model):
 
 
 class RegionStr(models.Model):
-    str_id = models.ForeignKey("Str", on_delete=models.DO_NOTHING, db_column="str_id")
-    region_id = models.ForeignKey("Region", on_delete=models.DO_NOTHING, db_column="region_id")
+    str = models.ForeignKey("Str", on_delete=models.DO_NOTHING)
+    region = models.ForeignKey("Region", on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = "region_str"
 
 
 class PanelCnv(models.Model):
-    panel_id = models.ForeignKey(Panel, on_delete=models.DO_NOTHING, db_column="panel_id")
-    cnv_id = models.ForeignKey("Cnv", on_delete=models.DO_NOTHING, db_column="cnv_id")
+    panel = models.ForeignKey(Panel, on_delete=models.DO_NOTHING)
+    cnv = models.ForeignKey("Cnv", on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = "panel_cnv"
@@ -88,16 +101,16 @@ class Cnv(models.Model):
 
 
 class RegionCnv(models.Model):
-    cnv_id = models.ForeignKey("Cnv", on_delete=models.DO_NOTHING, db_column="cnv_id")
-    region_id = models.ForeignKey("Region", on_delete=models.DO_NOTHING, db_column="region_id")
+    cnv = models.ForeignKey("Cnv", on_delete=models.DO_NOTHING)
+    region = models.ForeignKey("Region", on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = "region_cnv"
 
 
 class PanelGene(models.Model):
-    panel_id = models.ForeignKey(Panel, on_delete=models.DO_NOTHING, db_column="panel_id")
-    gene_id = models.ForeignKey("Gene", on_delete=models.DO_NOTHING, db_column="gene_id")
+    panel = models.ForeignKey(Panel, on_delete=models.DO_NOTHING)
+    gene = models.ForeignKey("Gene", on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = "panel_gene"
@@ -105,8 +118,9 @@ class PanelGene(models.Model):
 
 class Gene(models.Model): 
     symbol = models.CharField(max_length=100)
-    clinical_transcript_id = models.ForeignKey(
-        "Transcript", on_delete=models.DO_NOTHING, null=True, db_column="clinical_transcript_id"
+    clinical_transcript = models.ForeignKey(
+        "Transcript", on_delete=models.DO_NOTHING, null=True,
+        related_name="clinical_transcript"
     )
 
     class Meta:
@@ -116,7 +130,7 @@ class Gene(models.Model):
 class Transcript(models.Model):
     refseq = models.CharField(max_length=100)
     version = models.CharField(max_length=100)
-    gene_id = models.ForeignKey(Gene, on_delete=models.DO_NOTHING, db_column="gene_id")
+    gene = models.ForeignKey(Gene, on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = "transcript"
@@ -124,8 +138,8 @@ class Transcript(models.Model):
 
 class Exon(models.Model):
     number = models.IntegerField()
-    transcript_id = models.ForeignKey(Transcript, on_delete=models.DO_NOTHING, db_column="transcript_id")
-    region_id = models.ForeignKey("Region", on_delete=models.DO_NOTHING, db_column="region_id")
+    transcript = models.ForeignKey(Transcript, on_delete=models.DO_NOTHING)
+    region = models.ForeignKey("Region", on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = "exon"
@@ -140,7 +154,7 @@ class Region(models.Model):
     chrom = models.CharField(max_length=100, choices=choices)
     start = models.IntegerField()
     end = models.IntegerField()
-    reference_id = models.ForeignKey("Reference", on_delete=models.DO_NOTHING, db_column="reference_id")
+    reference = models.ForeignKey("Reference", on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = "region"

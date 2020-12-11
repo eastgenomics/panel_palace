@@ -62,7 +62,7 @@ class PanelStr(models.Model):
 
 
 class Str(models.Model):
-    gene = models.ForeignKey("Gene", on_delete=models.DO_NOTHING)
+    gene = models.ForeignKey("Gene", on_delete=models.DO_NOTHING, null=True)
     name = models.CharField(max_length=100)
     repeated_sequence = models.CharField(max_length=100)
     nb_repeats = models.IntegerField()
@@ -118,6 +118,7 @@ class PanelGene(models.Model):
 
 class Gene(models.Model): 
     symbol = models.CharField(max_length=100)
+    hgnc_id = models.CharField(max_length=50)
     clinical_transcript = models.ForeignKey(
         "Transcript", on_delete=models.DO_NOTHING, null=True,
         related_name="clinical_transcript"

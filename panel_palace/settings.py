@@ -29,8 +29,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config_panel_db.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
+# No need for hosts because I don't use a front end interface
 ALLOWED_HOSTS = []
 
 

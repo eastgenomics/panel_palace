@@ -1,8 +1,6 @@
 import sys
 from django.db import models
 
-# Create your models here.
-
 sys.path.append("/home/egg-user/panels/panel_config")
 
 import config_panel_db

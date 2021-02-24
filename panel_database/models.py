@@ -1,164 +1,77 @@
+import sys
 from django.db import models
 
 # Create your models here.
 
+sys.path.append("/home/egg-user/panels/panel_config")
 
-class Test(models.Model):
-    test_id = models.CharField(max_length=100)
+import config_panel_db
+
+
+class ClinicalIndication(models.Model):
+    clinical_indication_id = models.CharField(max_length=100)
     name = models.TextField(max_length=200)
-    method = models.CharField(max_length=100)
     version = models.CharField(max_length=100)
     gemini_name = models.CharField(max_length=200)
 
     class Meta:
-        db_table = "test"
+        db_table = "clinical_indication"
+        indexes = [
+            models.Index(fields=["name"]),
+            models.Index(fields=["gemini_name"]),
+            models.Index(fields=["version"])
+        ]
 
 
-class TestPanel(models.Model):
-    test = models.ForeignKey(Test, on_delete=models.DO_NOTHING)
+class ClinicalIndicationPanels(models.Model):
+    clinical_indication = models.ForeignKey(
+        ClinicalIndication, on_delete=models.DO_NOTHING
+    )
     panel = models.ForeignKey("Panel", on_delete=models.DO_NOTHING)
 
     class Meta:
-        db_table = "test_panel"
-
-
-class TestGene(models.Model):
-    test = models.ForeignKey(Test, on_delete=models.DO_NOTHING)
-    gene = models.ForeignKey("Gene", on_delete=models.DO_NOTHING)
-
-    class Meta:
-        db_table = "test_gene"
+        db_table = "clinical_indication_panels"
+        indexes = [
+            models.Index(fields=["clinical_indication", "panel"])
+        ]
 
 
 class Panel(models.Model):
-    panelapp_id = models.IntegerField()
+    panelapp_id = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
-    version = models.CharField(max_length=100)
-    signedoff = models.CharField(max_length=100)
-    is_superpanel = models.BooleanField()
+    panel_type = models.ForeignKey("PanelType", on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = "panel"
+        indexes = [
+            models.Index(fields=["name"]),
+            models.Index(fields=["panelapp_id"])
+        ]
 
 
-class Superpanel(models.Model):
-    superpanel = models.ForeignKey(
-        "Panel", on_delete=models.DO_NOTHING, related_name="superpanel"
-    )
-    panel = models.ForeignKey(
-        "Panel", on_delete=models.DO_NOTHING, related_name="panel"
-    )
+class PanelType(models.Model):
+    panel_types = []
+
+    for panel_type in config_panel_db.panel_types:
+        panel_types.append((panel_type, panel_type))
+
+    type = models.CharField(max_length=50, choices=panel_types)
 
     class Meta:
-        db_table = "superpanel"
+        db_table = "panel_type"
 
 
-class PanelStr(models.Model):
+class PanelFeatures(models.Model):
+    panel_version = models.FloatField()
+    description = models.TextField(null=True)
+    feature = models.ForeignKey("Feature", on_delete=models.DO_NOTHING)
     panel = models.ForeignKey(Panel, on_delete=models.DO_NOTHING)
-    str = models.ForeignKey("Str", on_delete=models.DO_NOTHING)
 
     class Meta:
-        db_table = "panel_str"
-
-
-class Str(models.Model):
-    gene = models.ForeignKey("Gene", on_delete=models.DO_NOTHING, null=True)
-    name = models.CharField(max_length=100)
-    repeated_sequence = models.CharField(max_length=100)
-    nb_repeats = models.IntegerField()
-    nb_pathogenic_repeats = models.IntegerField()
-
-    class Meta:
-        db_table = "str"
-
-
-class RegionStr(models.Model):
-    str = models.ForeignKey("Str", on_delete=models.DO_NOTHING)
-    region = models.ForeignKey("Region", on_delete=models.DO_NOTHING)
-
-    class Meta:
-        db_table = "region_str"
-
-
-class PanelCnv(models.Model):
-    panel = models.ForeignKey(Panel, on_delete=models.DO_NOTHING)
-    cnv = models.ForeignKey("Cnv", on_delete=models.DO_NOTHING)
-
-    class Meta:
-        db_table = "panel_cnv"
-
-
-class Cnv(models.Model):
-    choices = (
-        ("cnv_gain", "cnv_gain"),
-        ("cnv_loss", "cnv_loss")
-    )
-    name = models.CharField(max_length=100)
-    variant_type = models.CharField(max_length=100, choices=choices)
-
-    class Meta:
-        db_table = "cnv"
-
-
-class RegionCnv(models.Model):
-    cnv = models.ForeignKey("Cnv", on_delete=models.DO_NOTHING)
-    region = models.ForeignKey("Region", on_delete=models.DO_NOTHING)
-
-    class Meta:
-        db_table = "region_cnv"
-
-
-class PanelGene(models.Model):
-    panel = models.ForeignKey(Panel, on_delete=models.DO_NOTHING)
-    gene = models.ForeignKey("Gene", on_delete=models.DO_NOTHING)
-
-    class Meta:
-        db_table = "panel_gene"
-
-
-class Gene(models.Model): 
-    symbol = models.CharField(max_length=100)
-    hgnc_id = models.CharField(max_length=50)
-    clinical_transcript = models.ForeignKey(
-        "Transcript", on_delete=models.DO_NOTHING, null=True,
-        related_name="clinical_transcript"
-    )
-
-    class Meta:
-        db_table = "gene"
-
-
-class Transcript(models.Model):
-    refseq = models.CharField(max_length=100)
-    version = models.CharField(max_length=100)
-    gene = models.ForeignKey(Gene, on_delete=models.DO_NOTHING)
-
-    class Meta:
-        db_table = "transcript"
-
-
-class Exon(models.Model):
-    number = models.IntegerField()
-    transcript = models.ForeignKey(Transcript, on_delete=models.DO_NOTHING)
-    region = models.ForeignKey("Region", on_delete=models.DO_NOTHING)
-
-    class Meta:
-        db_table = "exon"
-
-
-class Region(models.Model):
-    choices = [(f"{i}", f"{i}") for i in range(1, 23)]
-    choices.append(("X", "X"))
-    choices.append(("Y", "Y"))
-    choices = tuple(choices)
-
-    chrom = models.CharField(max_length=100, choices=choices)
-    start = models.IntegerField()
-    end = models.IntegerField()
-    reference = models.ForeignKey("Reference", on_delete=models.DO_NOTHING)
-
-    class Meta:
-        db_table = "region"
+        db_table = "panel_features"
+        indexes = [
+            models.Index(fields=["panel_version", "feature", "panel"])
+        ]
 
 
 class Reference(models.Model):
@@ -166,3 +79,150 @@ class Reference(models.Model):
 
     class Meta:
         db_table = "reference"
+
+
+class Feature(models.Model):
+    gene = models.ForeignKey(
+        "Gene", on_delete=models.DO_NOTHING, null=True
+    )
+    feature_type = models.ForeignKey(
+        "FeatureType", on_delete=models.DO_NOTHING
+    )
+
+    class Meta:
+        db_table = "feature"
+        indexes = [
+            models.Index(fields=["gene"])
+        ]
+
+
+class FeatureType(models.Model):
+    feature_choices = []
+
+    for feature_type in config_panel_db.feature_types:
+        feature_choices.append((feature_type, feature_type))
+
+    type = models.CharField(max_length=50, choices=feature_choices)
+
+    class Meta:
+        db_table = "feature_type"
+
+
+class Genes2transcripts(models.Model):
+    clinical_transcript = models.BooleanField()
+    date = models.DateField()
+    transcript = models.ForeignKey("Transcript", on_delete=models.DO_NOTHING)
+    gene = models.ForeignKey("Gene", on_delete=models.DO_NOTHING)
+    reference = models.ForeignKey("Reference", on_delete=models.DO_NOTHING)
+
+    class Meta:
+        db_table = "genes2transcripts"
+        indexes = [
+            models.Index(fields=["transcript", "gene", "reference"])
+        ]
+
+
+class Gene(models.Model):
+    hgnc_id = models.CharField(max_length=25)
+
+    class Meta:
+        db_table = "gene"
+
+
+class Transcript(models.Model):
+    refseq_base = models.CharField(max_length=50)
+    version = models.IntegerField()
+    canonical = models.BooleanField()
+
+    class Meta:
+        db_table = "transcript"
+
+
+class hgnc_current(models.Model):
+    hgnc_id = models.CharField(max_length=100, unique=True, primary_key=True)
+    approved_symbol = models.CharField(max_length=100)
+    approved_name = models.TextField()
+    status = models.TextField()
+    previous_symbols = models.TextField()
+    alias_symbols = models.TextField()
+    chromosome = models.TextField()
+    accession_numbers = models.TextField()
+    locus_type = models.TextField()
+    locus_group = models.TextField()
+    previous_name = models.TextField()
+    alias_names = models.TextField()
+    date_approved = models.TextField()
+    date_modified = models.TextField()
+    date_symbol_changed = models.TextField()
+    date_name_changed = models.TextField()
+    enzyme_ids = models.TextField()
+    specialist_database_links = models.TextField()
+    specialist_database_ids = models.TextField()
+    pubmed_ids = models.TextField()
+    gene_group_id = models.TextField()
+    gene_group_name = models.TextField()
+    ccds_ids = models.TextField()
+    locus_specific_databases = models.TextField()
+    ext_ncbi_gene_id = models.TextField()
+    ext_omim_id = models.TextField()
+    ext_refseq = models.TextField()
+    ext_uniprot_id = models.TextField()
+    ext_ensembl_id = models.TextField()
+    ext_vega_id = models.TextField()
+    ext_ucsc_id = models.TextField()
+    ext_mouse_genome_database_id = models.TextField()
+    ext_rat_genome_database_id = models.TextField()
+    ext_lncipedia_id = models.TextField()
+    ext_gtrnadb_id = models.TextField()
+    ext_agr_hgnc_id = models.TextField()
+
+    class Meta:
+        db_table = "hgnc_current"
+        indexes = [
+            models.Index(fields=["hgnc_id"]),
+        ]
+
+
+class hgnc_210129(models.Model):
+    hgnc_id = models.CharField(max_length=100, unique=True, primary_key=True)
+    approved_symbol = models.CharField(max_length=100)
+    approved_name = models.TextField()
+    status = models.TextField()
+    previous_symbols = models.TextField()
+    alias_symbols = models.TextField()
+    chromosome = models.TextField()
+    accession_numbers = models.TextField()
+    locus_type = models.TextField()
+    locus_group = models.TextField()
+    previous_name = models.TextField()
+    alias_names = models.TextField()
+    date_approved = models.TextField()
+    date_modified = models.TextField()
+    date_symbol_changed = models.TextField()
+    date_name_changed = models.TextField()
+    enzyme_ids = models.TextField()
+    specialist_database_links = models.TextField()
+    specialist_database_ids = models.TextField()
+    pubmed_ids = models.TextField()
+    gene_group_id = models.TextField()
+    gene_group_name = models.TextField()
+    ccds_ids = models.TextField()
+    locus_specific_databases = models.TextField()
+    ext_ncbi_gene_id = models.TextField()
+    ext_omim_id = models.TextField()
+    ext_refseq = models.TextField()
+    ext_uniprot_id = models.TextField()
+    ext_ensembl_id = models.TextField()
+    ext_vega_id = models.TextField()
+    ext_ucsc_id = models.TextField()
+    ext_mouse_genome_database_id = models.TextField()
+    ext_rat_genome_database_id = models.TextField()
+    ext_lncipedia_id = models.TextField()
+    ext_gtrnadb_id = models.TextField()
+    ext_agr_hgnc_id = models.TextField()
+
+    class Meta:
+        db_table = "hgnc_210129"
+        indexes = [
+            models.Index(fields=["hgnc_id"]),
+        ]

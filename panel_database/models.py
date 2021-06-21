@@ -16,7 +16,6 @@ class ClinicalIndication(models.Model):
         indexes = [
             models.Index(fields=["name"]),
             models.Index(fields=["gemini_name"]),
-            models.Index(fields=["version"])
         ]
 
 
@@ -30,7 +29,7 @@ class ClinicalIndicationPanels(models.Model):
     class Meta:
         db_table = "clinical_indication_panels"
         indexes = [
-            models.Index(fields=["clinical_indication", "panel"])
+            models.Index(fields=["clinical_indication", "panel", "version"])
         ]
 
 

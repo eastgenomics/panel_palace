@@ -29,7 +29,7 @@ class ClinicalIndicationPanels(models.Model):
     class Meta:
         db_table = "clinical_indication_panels"
         indexes = [
-            models.Index(fields=["clinical_indication", "panel", "version"])
+            models.Index(fields=["clinical_indication", "panel", "ci_version"])
         ]
 
 

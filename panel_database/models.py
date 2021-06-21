@@ -9,7 +9,6 @@ import config_panel_db
 class ClinicalIndication(models.Model):
     clinical_indication_id = models.CharField(max_length=100)
     name = models.CharField(max_length=200)
-    version = models.CharField(max_length=100)
     gemini_name = models.CharField(max_length=200)
 
     class Meta:

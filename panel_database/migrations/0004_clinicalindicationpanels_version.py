@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='clinicalindicationpanels',
-            name='version',
+            name='ci_version',
             field=models.CharField(default='', max_length=100),
         ),
     ]

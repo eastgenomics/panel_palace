@@ -24,7 +24,7 @@ class ClinicalIndicationPanels(models.Model):
         ClinicalIndication, on_delete=models.DO_NOTHING
     )
     panel = models.ForeignKey("Panel", on_delete=models.DO_NOTHING)
-    version = models.CharField(max_length=100, default="")
+    ci_version = models.CharField(max_length=100, default="")
 
     class Meta:
         db_table = "clinical_indication_panels"

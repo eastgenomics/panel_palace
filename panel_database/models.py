@@ -9,7 +9,6 @@ import config_panel_db
 class ClinicalIndication(models.Model):
     clinical_indication_id = models.CharField(max_length=100)
     name = models.CharField(max_length=200)
-    version = models.CharField(max_length=100)
     gemini_name = models.CharField(max_length=200)
 
     class Meta:
@@ -17,7 +16,6 @@ class ClinicalIndication(models.Model):
         indexes = [
             models.Index(fields=["name"]),
             models.Index(fields=["gemini_name"]),
-            models.Index(fields=["version"])
         ]
 
 
@@ -26,16 +24,17 @@ class ClinicalIndicationPanels(models.Model):
         ClinicalIndication, on_delete=models.DO_NOTHING
     )
     panel = models.ForeignKey("Panel", on_delete=models.DO_NOTHING)
+    ci_version = models.CharField(max_length=100, default="")
 
     class Meta:
         db_table = "clinical_indication_panels"
         indexes = [
-            models.Index(fields=["clinical_indication", "panel"])
+            models.Index(fields=["clinical_indication", "panel", "ci_version"])
         ]
 
 
 class Panel(models.Model):
-    panelapp_id = models.CharField(max_length=100)
+    panelapp_id = models.CharField(max_length=100, blank=True, default="")
     name = models.CharField(max_length=100)
     panel_type = models.ForeignKey("PanelType", on_delete=models.DO_NOTHING)
 
@@ -61,7 +60,7 @@ class PanelType(models.Model):
 
 class PanelFeatures(models.Model):
     panel_version = models.CharField(max_length=50)
-    description = models.TextField(null=True)
+    description = models.TextField(blank=True, default="")
     feature = models.ForeignKey("Feature", on_delete=models.DO_NOTHING)
     panel = models.ForeignKey(Panel, on_delete=models.DO_NOTHING)
 

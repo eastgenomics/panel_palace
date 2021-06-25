@@ -60,7 +60,7 @@ class PanelType(models.Model):
 
 class PanelFeatures(models.Model):
     panel_version = models.CharField(max_length=50)
-    description = models.TextField(blank=True, default="")
+    description = models.CharField(max_length=1000, blank=True, default="")
     feature = models.ForeignKey("Feature", on_delete=models.DO_NOTHING)
     panel = models.ForeignKey(Panel, on_delete=models.DO_NOTHING)
 

@@ -10,13 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-import sys
+import os
 
 from pathlib import Path
-
-sys.path.append("/home/egg-user/panels/panel_config")
-
-import config_panel_db
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config_panel_db.SECRET_KEY
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -85,9 +81,9 @@ DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "panel_database",
-        "USER": config_panel_db.user_admin,
-        "PASSWORD": config_panel_db.passwd_admin,
-        "HOST": config_panel_db.host,
+        "USER": os.getenv('user_admin'),
+        "PASSWORD": os.getenv('passwd_admin'),
+        "HOST": os.getenv('host'),
     },
 }
 

@@ -1,10 +1,7 @@
-import sys
+import json
+import os
+
 from django.db import models
-
-sys.path.append("/home/egg-user/panels/panel_config")
-
-import config_panel_db
-
 
 class ClinicalIndication(models.Model):
     code = models.CharField(max_length=100)
@@ -49,7 +46,7 @@ class Panel(models.Model):
 class PanelType(models.Model):
     panel_types = []
 
-    for panel_type in config_panel_db.panel_types:
+    for panel_type in json.loads(os.getenv("panel_types")):
         panel_types.append((panel_type, panel_type))
 
     type = models.CharField(max_length=50, choices=panel_types)
@@ -96,7 +93,7 @@ class Feature(models.Model):
 class FeatureType(models.Model):
     feature_choices = []
 
-    for feature_type in config_panel_db.feature_types:
+    for feature_type in json.loads(os.getenv("feature_types")):
         feature_choices.append((feature_type, feature_type))
 
     type = models.CharField(max_length=50, choices=feature_choices)

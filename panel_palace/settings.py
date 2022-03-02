@@ -14,7 +14,7 @@ import sys
 
 from pathlib import Path
 
-sys.path.append("/home/egg-user/panels/panel_config")
+sys.path.append("/home/panels/panel_config")
 
 import config_panel_db
 

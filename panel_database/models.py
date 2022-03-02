@@ -1,7 +1,7 @@
 import sys
 from django.db import models
 
-sys.path.append("/home/egg-user/panels/panel_config")
+sys.path.append("/home/panels/panel_config")
 
 import config_panel_db
 
@@ -220,6 +220,51 @@ class hgnc_210129(models.Model):
 
     class Meta:
         db_table = "hgnc_210129"
+        indexes = [
+            models.Index(fields=["hgnc_id"]),
+        ]
+
+
+class hgnc_220302(models.Model):
+    hgnc_id = models.CharField(max_length=100, unique=True, primary_key=True)
+    approved_symbol = models.CharField(max_length=100)
+    approved_name = models.TextField()
+    status = models.TextField()
+    previous_symbols = models.TextField()
+    alias_symbols = models.TextField()
+    chromosome = models.TextField()
+    accession_numbers = models.TextField()
+    locus_type = models.TextField()
+    locus_group = models.TextField()
+    previous_name = models.TextField()
+    alias_names = models.TextField()
+    date_approved = models.TextField()
+    date_modified = models.TextField()
+    date_symbol_changed = models.TextField()
+    date_name_changed = models.TextField()
+    enzyme_ids = models.TextField()
+    specialist_database_links = models.TextField()
+    specialist_database_ids = models.TextField()
+    pubmed_ids = models.TextField()
+    gene_group_id = models.TextField()
+    gene_group_name = models.TextField()
+    ccds_ids = models.TextField()
+    locus_specific_databases = models.TextField()
+    ext_ncbi_gene_id = models.TextField()
+    ext_omim_id = models.TextField()
+    ext_refseq = models.TextField()
+    ext_uniprot_id = models.TextField()
+    ext_ensembl_id = models.TextField()
+    ext_vega_id = models.TextField()
+    ext_ucsc_id = models.TextField()
+    ext_mouse_genome_database_id = models.TextField()
+    ext_rat_genome_database_id = models.TextField()
+    ext_lncipedia_id = models.TextField()
+    ext_gtrnadb_id = models.TextField()
+    ext_agr_hgnc_id = models.TextField()
+
+    class Meta:
+        db_table = "hgnc_220302"
         indexes = [
             models.Index(fields=["hgnc_id"]),
         ]

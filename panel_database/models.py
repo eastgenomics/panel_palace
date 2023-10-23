@@ -1,7 +1,7 @@
 import sys
 from django.db import models
 
-sys.path.append("/home/egg-user/panels/panel_config")
+sys.path.append("/home/kimy/NHS/Panelapp/panel_config")
 
 import config_panel_db
 
@@ -35,7 +35,7 @@ class ClinicalIndicationPanels(models.Model):
 
 class Panel(models.Model):
     panelapp_id = models.CharField(max_length=100, blank=True, default="")
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=500)
     panel_type = models.ForeignKey("PanelType", on_delete=models.DO_NOTHING)
 
     class Meta:

@@ -35,7 +35,7 @@ class ClinicalIndicationPanels(models.Model):
 
 class Panel(models.Model):
     panelapp_id = models.CharField(max_length=100, blank=True, default="")
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=500)
     panel_type = models.ForeignKey("PanelType", on_delete=models.DO_NOTHING)
 
     class Meta:
